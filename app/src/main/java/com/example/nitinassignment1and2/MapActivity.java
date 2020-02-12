@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -39,6 +40,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private Button sBtn;
     private Button saveBtn;
+    private EditText edTxt;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
@@ -59,6 +61,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void initView() {
+
+        edTxt = findViewById(R.id.searchET);
+
         //
         sBtn = findViewById(R.id.searchBtn);
         sBtn.setOnClickListener(new View.OnClickListener() {
@@ -222,7 +227,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Object[] data;
         data = new Object[2];
         data[0] = mMap;
-        data[1] = getURL(latitude, longitude, "restaurant");
+        data[1] = getURL(latitude, longitude, edTxt.getText().toString());
         GetNearByPlace getNearByPlace = new GetNearByPlace();
         getNearByPlace.execute(data);
         Toast.makeText(this, "Restaurant", Toast.LENGTH_SHORT).show();
