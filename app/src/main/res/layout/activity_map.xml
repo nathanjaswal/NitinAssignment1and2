@@ -85,7 +85,7 @@
 
     <Button
         android:id="@+id/normalBtn"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:onClick="onClick"
@@ -95,28 +95,27 @@
 
     <Button
         android:id="@+id/satelliteBtn"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         android:onClick="onClick"
         android:text="satellite"
-        app:layout_constraintEnd_toStartOf="@+id/terrainBtn"
         app:layout_constraintStart_toEndOf="@+id/normalBtn"
         app:layout_constraintTop_toBottomOf="@+id/view" />
 
     <Button
         android:id="@+id/terrainBtn"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="7dp"
         android:onClick="onClick"
         android:text="terrain"
-        app:layout_constraintTop_toBottomOf="@+id/view"
-        tools:layout_editor_absoluteX="212dp" />
+        app:layout_constraintStart_toEndOf="@+id/satelliteBtn"
+        app:layout_constraintTop_toBottomOf="@+id/view" />
 
     <Button
         android:id="@+id/hybridBtn"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="15dp"

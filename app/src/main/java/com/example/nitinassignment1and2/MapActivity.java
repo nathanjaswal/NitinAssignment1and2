@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -15,6 +16,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -35,6 +37,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private Button sBtn;
+    private Button saveBtn;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
@@ -48,8 +52,31 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
+        initView();
+
         getUserLocation();
         initMap();
+    }
+
+    private void initView() {
+        //
+        sBtn = findViewById(R.id.searchBtn);
+        sBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                searchClicked();
+            }
+        });
+
+        saveBtn = findViewById(R.id.saveBtn);
+        saveBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                saveClicked();
+            }
+        });
     }
 
     private String getDirectionURL(double lat, double lng) {
@@ -82,27 +109,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Object[] data;
         switch (v.getId()) {
             case R.id.normalBtn:
-                data = new Object[2];
-                data[0] = mMap;
-                data[1] = getURL(latitude, longitude, "restaurant");
-                //
-                GetNearByPlace getNearByPlace = new GetNearByPlace();
-                getNearByPlace.execute(data);
-                Toast.makeText(this, "Restaurant", Toast.LENGTH_SHORT).show();
+                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 break;
             case R.id.satelliteBtn:
+                mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                break;
             case R.id.terrainBtn:
-                data = new Object[3];
-                data[0] = mMap;
-                data[1] = getDirectionURL(latitude, longitude);
-                data[2] = new LatLng(dest_lat, dest_lng);
-                //
-                GetDirections directions = new GetDirections();
-                directions.execute(data);
-                Toast.makeText(this, "Directions", Toast.LENGTH_SHORT).show();
-
+                mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
                 break;
             case R.id.hybridBtn:
+                mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                 break;
         }
     }
@@ -197,5 +213,24 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             setHomeMarker();
             fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
         }
+    }
+
+    /** ACTION
+     * */
+    public void searchClicked() {
+        //
+        Object[] data;
+        data = new Object[2];
+        data[0] = mMap;
+        data[1] = getURL(latitude, longitude, "restaurant");
+        GetNearByPlace getNearByPlace = new GetNearByPlace();
+        getNearByPlace.execute(data);
+        Toast.makeText(this, "Restaurant", Toast.LENGTH_SHORT).show();
+
+    }
+
+    public void saveClicked() {
+
+
     }
 }

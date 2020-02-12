@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    /** Helper
+    /** ACTION
      * */
     public void mapDClicked() {
         //

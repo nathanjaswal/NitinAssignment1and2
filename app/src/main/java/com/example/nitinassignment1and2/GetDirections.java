@@ -57,7 +57,7 @@ public class GetDirections extends AsyncTask<Object, String, String> {
                 .draggable(true);
         mMap.addMarker(markerOptions);
 
-        if (MainActivity.isDirectionRequested) {
+        if (MapActivity.isDirectionRequested) {
             String[] directionList;
             directionList = DataParser.parseDirections(s);
             displayDirections(directionList);
