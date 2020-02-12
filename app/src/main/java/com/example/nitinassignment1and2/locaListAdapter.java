@@ -29,8 +29,8 @@ public class locaListAdapter extends RecyclerView.Adapter<locaListAdapter.listVi
     @Override
     public void onBindViewHolder(@NonNull listViewHolder holder, int position) {
         final LocM vehicle = locations.get(position);
-//        holder.txtType.setText(vehicle.getVehicleType());
-//        holder.txtMaker.setText(vehicle.getManufacturer());
+        holder.txtAdd.setText(vehicle.getAddress());
+        holder.txtDate.setText(vehicle.getDate());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,12 +53,12 @@ public class locaListAdapter extends RecyclerView.Adapter<locaListAdapter.listVi
     }
 
     public static class listViewHolder extends RecyclerView.ViewHolder {
-        public TextView txtType;
-        public TextView txtMaker;
+        public TextView txtAdd;
+        public TextView txtDate;
         public listViewHolder(@NonNull View itemView) {
             super(itemView);
-//            txtType = itemView.findViewById(R.id.txtVType);
-//            txtMaker = itemView.findViewById(R.id.txtVMaker);
+            txtAdd = itemView.findViewById(R.id.addressTV);
+            txtDate = itemView.findViewById(R.id.dateTV);
 
         }
     }

@@ -5,6 +5,7 @@ public class LocM {
      * Properties
      */
     protected String address;
+    protected String date;
     protected Double lat;
     protected Double longi;
     //-----------------------------------------------------------------------
@@ -32,6 +33,14 @@ public class LocM {
         this.address = address;
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String address) {
+        this.date = date;
+    }
+
     public Double getLat() {
         return lat;
     }
@@ -39,7 +48,6 @@ public class LocM {
     public void setLat(Double lat) {
         this.lat = lat;
     }
-
 
     public Double getLongi() {
         return longi;
