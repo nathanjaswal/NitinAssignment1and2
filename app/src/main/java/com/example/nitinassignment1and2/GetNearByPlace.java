@@ -2,6 +2,8 @@ package com.example.nitinassignment1and2;
 
 
 import android.os.AsyncTask;
+import android.util.Log;
+
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -23,6 +25,7 @@ public class GetNearByPlace extends AsyncTask<Object, String, String> {
         url = (String) objects[1];
         try {
             String data = GoogleStore.readURL(url);
+            Log.i("Nitin", data);
             if (data != null) {
                 placeData = data;
             }
@@ -37,8 +40,9 @@ public class GetNearByPlace extends AsyncTask<Object, String, String> {
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
         try {
-            List<Place> places = DataParser.getPlaces(s);
-            showMarkers(places);
+            List<Place> placeL = DataParser.getPlaces(s);
+            Log.i("Nitin", String.valueOf(placeL));
+            showMarkers(placeL);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -50,7 +54,7 @@ public class GetNearByPlace extends AsyncTask<Object, String, String> {
 
             LatLng location = new LatLng(Double.valueOf(place.latitude), Double.valueOf(place.longitude));
             MarkerOptions markerOptions = new MarkerOptions().position(location)
-                    .title(place.name + " : " + place.vicinity)
+                    .title(place.vicinity)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
             googleMap.addMarker(markerOptions);
         }

@@ -18,7 +18,7 @@ public class DataParser {
 
         jsonArray = json.getJSONArray("results");
 
-        List<Place> places = new ArrayList<>();
+        List<Place> placeArr = new ArrayList<>();
 
         for (int i = 0; i<jsonArray.length(); i++) {
 
@@ -41,18 +41,20 @@ public class DataParser {
                 longtude = location.getString("lng");
                 refrence = jsonObject.getString("reference");
 
-                Place place = new Place(placeName, vicinity, latitude, longtude, refrence);
 
 
-                Log.d("arr", "places" + place);
-                places.add(place);
+                Place newplace = new Place(placeName, vicinity, latitude, longtude, refrence);
+
+
+                Log.d("arr", "places" + newplace);
+                placeArr.add(newplace);
 
             } catch (JSONException e) {
                 e.getStackTrace();
             }
 
         }
-        return  places;
+        return  placeArr;
     }
 
     public static Distance parseDistance(String jsonData) throws JSONException {

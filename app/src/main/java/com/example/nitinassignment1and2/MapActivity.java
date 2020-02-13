@@ -15,6 +15,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,9 +34,11 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,
+        GoogleMap.OnMarkerDragListener {
 
     private GoogleMap mMap;
     private Button sBtn;
@@ -46,8 +49,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private LocationCallback locationCallback;
     private static final int REQUEST_CODE = 1;
 
-    private Double latitude, longitude, dest_lat, dest_lng;
+    private Double latitude, longitude, dest_lat, dest_lng, save_lat, save_long;
     public static boolean isDirectionRequested = false;
+    private String save_add;
+    private String save_date;
+
+    public final int RADIUS = 1500;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,17 +137,47 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(final GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
+
+                mMap.clear();
+
                 dest_lat = latLng.latitude;
-                dest_lng =latLng.longitude;
+                dest_lng = latLng.longitude;
+
+                //
+                LatLng lo = new LatLng(latitude, longitude);
+                MarkerOptions markerOptions = new MarkerOptions().position(lo)
+                        .title("Your Location")
+                        .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_action_marker_foreground))
+                        .snippet("You are here");
+
+
+                mMap.addMarker(markerOptions);
+
+
+                //
                 setMarker(latLng);
+
+                Object[] data;
+                data = new Object[3];
+                String url = getDirectionUrl();
+                data[0] = mMap;
+                data[1] = url;
+                data[2] = new LatLng(dest_lat, dest_lng);
+                GetDirections getDirectionsData = new GetDirections();
+                // execute asynchronously
+                getDirectionsData.execute(data);
             }
         });
+
+        mMap.setOnMarkerDragListener(this);
+
         if(!checkPermission())
             requestPermission();
         else
@@ -150,8 +188,29 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         MarkerOptions markerOptions = new MarkerOptions().position(location)
                 .title("Your Destination")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                //.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_action_marker_foreground))
                 .draggable(true);
         mMap.addMarker(markerOptions);
+    }
+
+    private String getDirectionUrl() {
+        StringBuilder googleDirectionUrl = new StringBuilder("https://maps.googleapis.com/maps/api/directions/json?");
+        googleDirectionUrl.append("origin="+latitude+","+longitude);
+        googleDirectionUrl.append("&destination="+dest_lat+","+dest_lng);
+        googleDirectionUrl.append("&key="+getString(R.string.api_key_places));
+        Log.d("nojo", "getDirectionUrl: "+googleDirectionUrl);
+        return googleDirectionUrl.toString();
+    }
+
+    private String getUrl(double latitude, double longitude, String nearbyPlace) {
+        StringBuilder googlePlaceUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        googlePlaceUrl.append("location=" + latitude + "," + longitude);
+        googlePlaceUrl.append("&radius=" + RADIUS);
+        googlePlaceUrl.append("&type=" + nearbyPlace);
+        googlePlaceUrl.append("&key=" + getString(R.string.api_key_places));
+        Log.d("", "getUrl: " + googlePlaceUrl);
+        return googlePlaceUrl.toString();
+
     }
 
     private void getUserLocation() {
@@ -175,7 +234,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, REQUEST_CODE);
     }
 
+
     private void setHomeMarker() {
+        Log.i("Noje", "DD");
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -220,10 +281,59 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    @Override
+    public void onMarkerDragStart(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+
+        mMap.clear();
+
+        dest_lat = marker.getPosition().latitude;
+        dest_lng = marker.getPosition().longitude;
+
+        //
+        LatLng lo = new LatLng(latitude, longitude);
+        MarkerOptions markerOptions = new MarkerOptions().position(lo)
+                .title("Your Location")
+                .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_action_marker_foreground))
+                .snippet("You are here");
+        mMap.addMarker(markerOptions);
+
+        //
+        setMarker(lo);
+
+        Object[] data;
+        data = new Object[3];
+        String url = getDirectionUrl();
+        data[0] = mMap;
+        data[1] = url;
+        data[2] = new LatLng(dest_lat, dest_lng);
+        GetDirections getDirectionsData = new GetDirections();
+        // execute asynchronously
+        getDirectionsData.execute(data);
+    }
+
     /** ACTION
      * */
     public void searchClicked() {
         //
+        mMap.clear();
+
+        LatLng lo = new LatLng(latitude, longitude);
+        MarkerOptions markerOptions = new MarkerOptions().position(lo)
+                .title("Your Location")
+                .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_action_marker_foreground))
+                .snippet("You are here");
+        mMap.addMarker(markerOptions);
+
         Object[] data;
         data = new Object[2];
         data[0] = mMap;
@@ -236,6 +346,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public void saveClicked() {
 
+        mMap.clear();
+
+        finish();
 
     }
 }

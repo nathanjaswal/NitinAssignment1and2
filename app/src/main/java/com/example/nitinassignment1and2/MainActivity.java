@@ -1,6 +1,5 @@
 package com.example.nitinassignment1and2;
 
-
 ////
 
 import androidx.appcompat.app.AppCompatActivity;
