@@ -59,7 +59,7 @@ public class locaListAdapter extends RecyclerView.Adapter<locaListAdapter.listVi
 
                 MainActivity mainActivity = (MainActivity) v.getContext();
                 mainActivity.getFromRoomDatabase();
-                
+
 
             }
 

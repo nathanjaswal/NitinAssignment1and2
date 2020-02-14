@@ -21,6 +21,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -52,17 +54,27 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final int REQUEST_CODE = 1;
 
     private Double latitude, longitude, dest_lat, dest_lng, save_lat, save_long;
-    public static boolean isDirectionRequested = false;
+    public static boolean isDirectionRequested = true;
     private String save_add;
     private String save_date;
 
     public final int RADIUS = 1500;
+
+    public TextView distance;
+    public TextView duration;
+
+    public Switch visited;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        initView();
+
+        getUserLocation();
+        initMap();
 
 
         Intent intent = getIntent();
@@ -71,16 +83,48 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Boolean editB = intent.getBooleanExtra("editBool", false);
         if (editB) {
             Places pl = intent.getParcelableExtra("plDetail");
-            pl.getAddress();
+
+            //
+            LatLng lo = new LatLng(Double.parseDouble(pl.getLatitude()), Double.parseDouble(pl.getLongitude()));
+            MarkerOptions markerOptions = new MarkerOptions().position(lo)
+                    .title("Your Location")
+                    .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_action_marker_foreground))
+                    .snippet("You are here");
+
+
+            mMap.addMarker(markerOptions);
+
+
+            //
+            setMarker(lo);
+
+            Object[] data;
+            data = new Object[5];
+            String url = getDirectionUrl();
+            data[0] = mMap;
+            data[1] = url;
+            data[2] = new LatLng(dest_lat, dest_lng);
+            data[3] = distance;
+            data[4] = duration;
+            GetDirections getDirectionsData = new GetDirections();
+            // execute asynchronously
+            getDirectionsData.execute(data);
         }
 
-        initView();
 
-        getUserLocation();
-        initMap();
+
     }
 
     private void initView() {
+
+        visited = findViewById(R.id.visited);
+        visited.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                searchClicked();
+            }
+        });
 
         edTxt = findViewById(R.id.searchET);
 
@@ -102,6 +146,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 saveClicked();
             }
         });
+
+        distance = findViewById(R.id.distance);
+        duration = findViewById(R.id.duration);
     }
 
     private String getDirectionURL(double lat, double lng) {
@@ -177,11 +224,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 setMarker(latLng);
 
                 Object[] data;
-                data = new Object[3];
+                data = new Object[5];
                 String url = getDirectionUrl();
                 data[0] = mMap;
                 data[1] = url;
                 data[2] = new LatLng(dest_lat, dest_lng);
+                data[3] = distance;
+                data[4] = duration;
                 GetDirections getDirectionsData = new GetDirections();
                 // execute asynchronously
                 getDirectionsData.execute(data);

@@ -2,6 +2,7 @@ package com.example.nitinassignment1and2;
 
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -19,12 +20,17 @@ public class GetDirections extends AsyncTask<Object, String, String> {
     GoogleMap mMap;
     String directionData, url;
     LatLng latLng;
+    TextView distance;
+    TextView duration;
+
 
     @Override
     protected String doInBackground(Object... objects) {
         mMap = (GoogleMap) objects[0];
         url = (String) objects[1];
         latLng = (LatLng) objects[2];
+        distance = (TextView) objects[3];
+        duration = (TextView) objects[4];
         try {
             String data = GoogleStore.readURL(url);
             if (data != null) {
@@ -50,6 +56,7 @@ public class GetDirections extends AsyncTask<Object, String, String> {
 
     private void setupMap(Distance distanceModel, String s) throws JSONException {
         //mMap.clear();
+
         MarkerOptions markerOptions = new MarkerOptions().position(latLng)
                 .title("Duration: "+ distanceModel.getDuration())
                 .snippet("Distance: "+ distanceModel.getDistance())
@@ -61,6 +68,8 @@ public class GetDirections extends AsyncTask<Object, String, String> {
             String[] directionList;
             directionList = DataParser.parseDirections(s);
             displayDirections(directionList);
+            distance.setText("Distance: "+distanceModel.getDistance());
+            duration.setText("Duration: "+distanceModel.getDuration());
         }
     }
 
