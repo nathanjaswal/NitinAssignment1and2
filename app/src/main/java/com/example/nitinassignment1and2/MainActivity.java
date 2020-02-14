@@ -8,10 +8,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -20,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private Button addBtn;
     private RecyclerView locRecyclerView;
     private locaListAdapter locListAdapter;
-    private List<LocM> locations;
+    private List<Places> locations = new ArrayList<>();
 
 
     @Override
@@ -28,7 +30,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
         initView();
+        getFromRoomDatabase();
+
+    }
+
+
+    public void getFromRoomDatabase() {
+        locations.removeAll(locations);
+        PlaceInfoServices placeInfoServices = new PlaceInfoServices(getApplicationContext());
+        locations.addAll(placeInfoServices.getAll());
+        locListAdapter.notifyDataSetChanged();
 
     }
 
@@ -37,11 +51,9 @@ public class MainActivity extends AppCompatActivity {
         addBtn = findViewById(R.id.addNL);
         locRecyclerView = findViewById(R.id.locationsRV);
         locListAdapter = new locaListAdapter(locations);
-        if(locations != null) {
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getBaseContext(), LinearLayoutManager.VERTICAL, false);
-            locRecyclerView.setLayoutManager(layoutManager);
-            locRecyclerView.setAdapter(locListAdapter);
-        }
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getBaseContext(), LinearLayoutManager.VERTICAL, false);
+        locRecyclerView.setLayoutManager(layoutManager);
+        locRecyclerView.setAdapter(locListAdapter);
 
         //
         addBtn.setOnClickListener(new View.OnClickListener() {
@@ -51,6 +63,10 @@ public class MainActivity extends AppCompatActivity {
                 mapDClicked();
             }
         });
+
+    }
+
+    public void getData() {
 
     }
 
@@ -65,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
     public void mapDClicked() {
         //
         Intent dAct = new Intent(MainActivity.this, MapActivity.class);
+
+        dAct.putExtra("editBool", false);
 
         startActivity(dAct);
     }

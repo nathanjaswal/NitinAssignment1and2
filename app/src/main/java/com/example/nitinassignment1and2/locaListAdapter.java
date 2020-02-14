@@ -1,6 +1,7 @@
 package com.example.nitinassignment1and2;
 
 import android.content.Intent;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class locaListAdapter extends RecyclerView.Adapter<locaListAdapter.listViewHolder> {
 
-    private List<LocM> locations;
+    private List<Places> locations;
 
-    public locaListAdapter(List<LocM> Locations) {
+    public locaListAdapter(List<Places> Locations) {
         this.locations = Locations;
     }
 
@@ -28,19 +29,29 @@ public class locaListAdapter extends RecyclerView.Adapter<locaListAdapter.listVi
 
     @Override
     public void onBindViewHolder(@NonNull listViewHolder holder, int position) {
-        final LocM vehicle = locations.get(position);
-        holder.txtAdd.setText(vehicle.getAddress());
-        holder.txtDate.setText(vehicle.getDate());
+        final Places pl = locations.get(position);
+        holder.txtAdd.setText(pl.getAddress());
+        holder.txtDate.setText(pl.getDate());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Intent vAct = new Intent(v.getContext(), MapActivity.class);
 
-                //vAct.putExtra("vehDetail", vehicle);
+                PlaceInfoServices placeInfoServices = new PlaceInfoServices(v.getContext());
+                placeInfoServices.delete(pl);
 
-                v.getContext().startActivity(vAct);
+                MainActivity mainActivity = (MainActivity) v.getContext();
+                mainActivity.getFromRoomDatabase();
+
+
+
+//                Intent vAct = new Intent(v.getContext(), MapActivity.class);
+//
+//                vAct.putExtra("plDetail", pl);
+//                vAct.putExtra("editBool", true);
+
+//                v.getContext().startActivity(vAct);
 
             }
 

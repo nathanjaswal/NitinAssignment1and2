@@ -1,6 +1,9 @@
 package com.example.nitinassignment1and2;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import androidx.annotation.NonNull;
@@ -9,7 +12,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "place_table")
-public class Places {
+public class Places implements Parcelable {
 
     public static final String Date_KEY = "date", VIC_KEY = "vicinity", LAT_KEY = "lat", LNG_KEY = "lng", LOC_KEY = "location";
 
@@ -33,6 +36,26 @@ public class Places {
 
     }
 
+
+    protected Places(Parcel in) {
+        id = in.readInt();
+        date = in.readString();
+        address = in.readString();
+        latitude = in.readString();
+        longitude = in.readString();
+    }
+
+    public static final Creator<Places> CREATOR = new Creator<Places>() {
+        @Override
+        public Places createFromParcel(Parcel in) {
+            return new Places(in);
+        }
+
+        @Override
+        public Places[] newArray(int size) {
+            return new Places[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -79,4 +102,17 @@ public class Places {
     }
 
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(date);
+        dest.writeString(address);
+        dest.writeString(latitude);
+        dest.writeString(longitude);
+    }
 }

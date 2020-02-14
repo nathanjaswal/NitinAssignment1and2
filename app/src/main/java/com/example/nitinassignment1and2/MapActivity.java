@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,6 +18,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -61,6 +63,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+
+        Intent intent = getIntent();
+
+        //
+        Boolean editB = intent.getBooleanExtra("editBool", false);
+        if (editB) {
+            Places pl = intent.getParcelableExtra("plDetail");
+            pl.getAddress();
+        }
 
         initView();
 
@@ -325,6 +337,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
      * */
     public void searchClicked() {
         //
+        hideKeyboard(this);
+
+        //
         mMap.clear();
 
         LatLng lo = new LatLng(latitude, longitude);
@@ -348,7 +363,24 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         mMap.clear();
 
-        finish();
+        // save to room...
+        Places newPlace = new Places("12/02/2021", "AAhiugiu1", "1212.000", "-322.0000");
+        PlaceInfoServices placeInfoServices = new PlaceInfoServices(getApplicationContext());
+        placeInfoServices.insertAll(newPlace);
 
+        Intent vAct = new Intent(getApplicationContext(), MainActivity.class);
+        getApplicationContext().startActivity(vAct);
+
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }
