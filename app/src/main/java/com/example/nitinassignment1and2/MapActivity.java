@@ -9,6 +9,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -41,6 +42,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleMap.OnMarkerDragListener {
 
@@ -57,6 +63,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public static boolean isDirectionRequested = true;
     private String save_add;
     private String save_date;
+
 
     public final int RADIUS = 1500;
 
@@ -121,9 +128,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         visited.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferences.Editor editor = getSharedPreferences("NitinAssignment", MODE_PRIVATE).edit();
+                editor.putString("id", "Elena");
+                editor.apply();
 
-                searchClicked();
             }
+
         });
 
         edTxt = findViewById(R.id.searchET);
@@ -208,13 +218,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                 dest_lat = latLng.latitude;
                 dest_lng = latLng.longitude;
+                save_lat = latLng.latitude;
+                save_long = latLng.longitude;
 
                 //
                 LatLng lo = new LatLng(latitude, longitude);
                 MarkerOptions markerOptions = new MarkerOptions().position(lo)
                         .title("Your Location")
                         .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_action_marker_foreground))
-                        .snippet("You are here");
+                        .snippet("Save Location");
 
 
                 mMap.addMarker(markerOptions);
@@ -259,7 +271,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         googleDirectionUrl.append("origin="+latitude+","+longitude);
         googleDirectionUrl.append("&destination="+dest_lat+","+dest_lng);
         googleDirectionUrl.append("&key="+getString(R.string.api_key_places));
-        Log.d("nojo", "getDirectionUrl: "+googleDirectionUrl);
+      //  Log.d("nojo", "getDirectionUrl: "+googleDirectionUrl);
         return googleDirectionUrl.toString();
     }
 
@@ -269,7 +281,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         googlePlaceUrl.append("&radius=" + RADIUS);
         googlePlaceUrl.append("&type=" + nearbyPlace);
         googlePlaceUrl.append("&key=" + getString(R.string.api_key_places));
-        Log.d("", "getUrl: " + googlePlaceUrl);
+       // Log.d("", "getUrl: " + googlePlaceUrl);
         return googlePlaceUrl.toString();
 
     }
@@ -408,12 +420,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
-    public void saveClicked() {
+    public static final String DATE_FORMAT_2 = "dd-MMM-yyyy";
+
+    public static String getCurrentDate() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_2);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date today = Calendar.getInstance().getTime();
+        return dateFormat.format(today);
+    }
+
+        public void saveClicked() {
 
         mMap.clear();
 
         // save to room...
-        Places newPlace = new Places("12/02/2021", "AAhiugiu1", "1212.000", "-322.0000");
+        Places newPlace = new Places(getCurrentDate(), getCurrentDate(), String.valueOf(save_lat), String.valueOf(save_long));
         PlaceInfoServices placeInfoServices = new PlaceInfoServices(getApplicationContext());
         placeInfoServices.insertAll(newPlace);
 
