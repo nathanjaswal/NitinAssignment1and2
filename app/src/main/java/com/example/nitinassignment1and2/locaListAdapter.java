@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.List;
@@ -33,7 +34,22 @@ public class locaListAdapter extends RecyclerView.Adapter<locaListAdapter.listVi
         holder.txtAdd.setText(pl.getAddress());
         holder.txtDate.setText(pl.getDate());
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.editBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent vAct = new Intent(v.getContext(), MapActivity.class);
+
+                vAct.putExtra("plDetail", pl);
+                vAct.putExtra("editBool", true);
+
+                v.getContext().startActivity(vAct);
+
+            }
+
+        });
+
+        holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -43,15 +59,7 @@ public class locaListAdapter extends RecyclerView.Adapter<locaListAdapter.listVi
 
                 MainActivity mainActivity = (MainActivity) v.getContext();
                 mainActivity.getFromRoomDatabase();
-
-
-
-//                Intent vAct = new Intent(v.getContext(), MapActivity.class);
-//
-//                vAct.putExtra("plDetail", pl);
-//                vAct.putExtra("editBool", true);
-
-//                v.getContext().startActivity(vAct);
+                
 
             }
 
@@ -66,11 +74,15 @@ public class locaListAdapter extends RecyclerView.Adapter<locaListAdapter.listVi
     public static class listViewHolder extends RecyclerView.ViewHolder {
         public TextView txtAdd;
         public TextView txtDate;
+        public ImageButton editBtn;
+        public ImageButton deleteBtn;
+
         public listViewHolder(@NonNull View itemView) {
             super(itemView);
             txtAdd = itemView.findViewById(R.id.addressTV);
             txtDate = itemView.findViewById(R.id.dateTV);
-
+            editBtn = itemView.findViewById(R.id.editBtn);
+            deleteBtn = itemView.findViewById(R.id.deleteBtn);
         }
     }
 
